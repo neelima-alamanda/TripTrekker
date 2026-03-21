@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tourist Attractions Recommendations</title>
+    <style>
+        body {
+            background-image: url('images/custom-background.jpg');
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-attachment: fixed;
+            padding: 20px;
+            font-family: 'Poppins', sans-serif;
+            color: #a48484;
+        }
+
+        /* Overlay effect */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: -1;
+        }
+
+        /* Container Styles */
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: rgba(81, 71, 71, 0.5);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(236, 36, 36, 0.2);
+            backdrop-filter: blur(12px);
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Header */
+        h1 {
+            text-align: center;
+            font-size: 32px;
+            color: #af7c82;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(24, 20, 20, 0.5);
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 5px;
+            color: #dba1a1;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            font-size: 14px;
+            border-radius: 10px;
+            border: 1px solid #a34f4f;
+            background: rgba(163, 170, 176, 0.8);
+            box-sizing: border-box;
+            outline: none;
+            box-shadow: 0 2px 6px #b2353533;
+            transition: box-shadow 0.3s, background-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            box-shadow: 0 4px 10px rgba(255, 255, 255, 0.5);
+            background-color: rgb(203, 185, 185);
+        }
+
+        /* Button Styles */
+        button {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            background-color: #3b2020;
+            color: #ac9a9a;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 4px 12px rgba(228, 181, 181, 0.205);
+        }
+
+        button:hover {
+            background-color: #965656;
+            box-shadow: 0 6px 16px rgba(178, 191, 203, 0.7);
+            transform: translateY(-2px);
+        }
+
+        /* Tourist Details Section */
+        #touristDetails {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .attraction {
+            background: linear-gradient(to right,  rgb(164, 132, 132,0.4), rgba(255, 230, 230, 0.4)); /* Light gradient with low opacity */
+            border-radius: 12px;
+            padding: 20px;
+            margin: 10px 0;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            transition: box-shadow 0.3s;
+        }
+
+        .attraction:hover {
+            box-shadow: 0 6px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        #touristDetails img {
+            max-width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            margin-top: 10px;
+            transition: box-shadow 0.3s;
+        }
+
+        #touristDetails img:hover {
+            box-shadow: 0 6px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        #touristDetails h2 {
+            color: #563333a9; 
+            font-size: 22px;
+        }
+
+        #touristDetails p {
+            color: #ffffff;
+            font-size: 16px;
+        }
+        .rating {
+            color: #ffffff;
+            font-size: 18px;
+            margin-top: 5px;
+        }
+
+        .history {
+            color:#ffffff;
+            font-size: 14px;
+            margin-top: 10px;
+            font-style: italic;
+        }
+        .Back-button{
+            text-align: left;
+            width: auto;
+        }
+    </style>
+    <button class="Back-button" onclick="navigateToPage('preview')">Back</button>
+
+</head>
+<body>
+
+    <div class="container">
+        <h1>Discover Tourist Attractions</h1>
+        <h2 id="selectedLocationHeader" style="text-align:center; color: #dba1a1;"></h2>
+        <button type="button" onclick="recommendTouristAttractions()">Find Attractions</button>
+        <div id="touristDetails"></div>
+    </div>
+
+    <script>
+
+window.addEventListener('DOMContentLoaded', () => {
+        // Load saved location from local storage on page load
+        const savedLocation = localStorage.getItem('selectedLocation');
+        const locationHeader = document.getElementById('selectedLocationHeader');
+            if (savedLocation) {
+                locationHeader.textContent = `Selected Location: ${savedLocation}`;
+            } else {
+                locationHeader.textContent = "No location selected yet.";
+            }
+        });
+    function recommendTouristAttractions() {
+        const location = localStorage.getItem('selectedLocation');
+        const attractionsData = {
+            "Palakollu": [
+        {
+            name: "Sri Veerabhadra Swamy Temple",
+            address: "Palakollu",
+            rating: "4.2",
+            description: "An ancient temple dedicated to Lord Shiva, known for its architecture and serene atmosphere.",
+            image: "images/veerabhadra-swamy.jpg"
+        },
+        {
+            name: "Sri Veerabhadra Swamy Temple",
+            address: "Palakollu",
+            rating: "4.3",
+            description: "A famous temple dedicated to Lord Veerabhadra, known for its peaceful ambiance.",
+            image: "images/veerabhadra-temple.jpg"
+        },
+        {
+            name: "Sri Kshetra Palakollu",
+            address: "Palakollu",
+            rating: "4.5",
+            description: "A religious site offering a tranquil retreat for pilgrims.",
+            image: "images/kshetra-palakollu.jpg"
+        }
+    ],
+    "Rajahmundry": [
+        {
+            name: "Godavari River",
+            address: "Rajahmundry",
+            rating: "4.5",
+            description: "A serene river, historically important for South India, known for its scenic views and spiritual significance.",
+            image: "images/godavari-river.jpg"
+        },
+        {
+            name: "Rajahmundry Bridge",
+            address: "Near Godavari River",
+            rating: "4.0",
+            description: "A popular bridge offering beautiful views of the Godavari river, built during the British era.",
+            image: "images/rajahmundry-bridge.jpg"
+        },
+        {
+            name: "Godavari River",
+            address: "Rajahmundry",
+            rating: "4.7",
+            description: "Enjoy a boat ride on the beautiful Godavari River, one of the major rivers in southern India.",
+            image: "images/godavari-river.jpg"
+        },
+        {
+            name: "Rajahmundry Bridge",
+            address: "Near Godavari River, Rajahmundry",
+            rating: "4.2",
+            description: "A famous bridge over the Godavari River, providing scenic views of the river and the city.",
+            image: "images/rajahmundry-bridge.jpg"
+        },
+        {
+            name: "ISKCON Rajahmundry",
+            address: "Bommuru, Rajahmundry",
+            rating: "4.6",
+            description: "A serene and spiritual location dedicated to Lord Krishna, part of the ISKCON organization.",
+            image: "images/iskcon-rajahmundry.jpg"
+        }
+    ],
+    "Vijayawada": [
+        {
+            name: "Kanaka Durga Temple",
+            address: "Indrakeeladri Hill, Vijayawada",
+            rating: "4.6",
+            description: "One of the most significant temples dedicated to Goddess Durga, located on Indrakeeladri Hill with panoramic views.",
+            image: "images/kanaka-durga-temple.jpg"
+        },
+        {
+            name: "Prakasam Barrage",
+            address: "Vijayawada",
+            rating: "4.3",
+            description: "A famous bridge over the Krishna River, providing stunning views of the surrounding areas.",
+            image: "images/prakasam-barrage.jpg"
+        },
+        {
+            name: "Prakasam Barrage",
+            address: "Krishna River, Vijayawada",
+            rating: "4.4",
+            description: "A historical barrage over the Krishna River, offering picturesque views and boat rides.",
+            image: "images/prakasam-barrage.jpg"
+        }
+    ],
+    "Visakhapatnam": [
+        {
+            name: "Rishikonda Beach",
+            address: "Rishikonda, Visakhapatnam",
+            rating: "4.5",
+            description: "A beautiful beach for swimming, sunbathing, and water sports.",
+            image: "images/rishikonda-beach.jpg"
+        },
+        {
+            name: "Rama Krishna Beach",
+            address: "Visakhapatnam",
+            rating: "4.7",
+            description: "A famous beach known for its relaxed atmosphere and historical naval significance.",
+            image: "images/rk-beach.jpg"
+        },
+        {
+            name: "Kailasagiri",
+            address: "Visakhapatnam",
+            rating: "4.6",
+            description: "A hilltop park offering panoramic views of the city and the coast.",
+            image: "images/kailasagiri.jpg"
+        },
+        {
+            name: "INS Kurusura Submarine Museum",
+            address: "R K Beach, Visakhapatnam",
+            rating: "4.5",
+            description: "A unique museum located in a retired submarine, offering an insight into naval history.",
+            image: "images/ins-kurusura-submarine.jpg"
+        }
+    ],
+    "Guntur": [
+        {
+            name: "Amaravati Buddhist Site",
+            address: "Amaravati, Guntur",
+            rating: "4.7",
+            description: "A historically significant Buddhist site with ancient stupas and relics.",
+            image: "images/amaravati-buddhist-site.jpg"
+        },
+        {
+            name: "Undavalli Caves",
+            address: "Undavalli, Guntur",
+            rating: "4.6",
+            description: "Ancient rock-cut temples dating back to the 4th century, offering insights into India's religious history.",
+            image: "images/undavalli-caves.jpg"
+        }
+    ],
+    "Bhimavaram": [
+        {
+            name: "Kolleru Lake",
+            address: "Bhimavaram",
+            rating: "4.5",
+            description: "A serene lake surrounded by natural beauty, ideal for bird watching and nature walks.",
+            image: "images/kolleru-lake.jpg"
+        },
+        {
+            name: "Sri Mavullamma Temple",
+            address: "Bhimavaram",
+            rating: "4.4",
+            description: "A temple dedicated to Goddess Mavullamma, known for its festivals and peaceful atmosphere.",
+            image: "images/mavullamma-temple.jpg"
+        },
+        {
+            name: "Ayyappa Swamy Temple",
+            address: "Bhimavaram",
+            rating: "4.6",
+            description: "A prominent temple dedicated to Lord Ayyappa, attracting pilgrims from all over. The temple's peaceful ambiance and beautiful surroundings make it a must-visit.",
+            image: "images/ayyappa-swamy-temple.jpg"
+        },
+        {
+            name: "Mavullamma Temple",
+            address: "Bhimavaram",
+            rating: "4.4",
+            description: "An ancient temple dedicated to Mavullamma, a local deity. It is known for its spiritual significance and its yearly celebrations during festivals.",
+            image: "images/mavullamma-temple.jpg"
+        },
+        {
+            name: "Bhimavaram Beach",
+            address: "Bhimavaram",
+            rating: "4.3",
+            description: "A serene beach, perfect for a relaxing getaway. Known for its calm waters and scenic views, it offers a quiet escape from the hustle of city life.",
+            image: "images/bhimavaram-beach.jpg"
+        },
+        {
+            name: "Veeravasram",
+            address: "Near Bhimavaram",
+            rating: "4.5",
+            description: "An ancient site with historical significance, known for its association with warriors and legends from the region's history.",
+            image: "images/veeravasram.jpg"
+        }
+    ]
+};
+
+    
+
+        const touristDetails = document.getElementById('touristDetails');
+        touristDetails.innerHTML = ""; // Clear previous results
+        const attractions = attractionsData[location] || [];
+        if (attractions.length === 0) {
+            touristDetails.innerHTML = "<p>No tourist attractions found for the selected location.</p>";
+        } else {
+            attractions.forEach((attraction) => {
+                const attractionDiv = document.createElement("div");
+                attractionDiv.className = "attraction";
+                attractionDiv.innerHTML = `
+                    <h2>${attraction.name}</h2>
+                    <p><strong>Address:</strong> ${attraction.address}</p>
+                    <div class="rating">Rating: ${attraction.rating} ★</div>
+                    <div class="history"> ${attraction.description}</div>
+                `
+                touristDetails.appendChild(attractionDiv);
+            });
+        }
+    }
+    function navigateToPage(page) {
+      if (page === 'preview') {
+        window.location.href = "preview.html";
+      } 
+    }
+    </script>
+</body>
+</html>

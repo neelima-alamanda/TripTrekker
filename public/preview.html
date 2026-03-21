@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Explore Options</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+  <style>
+    /* General Styles */
+    body {
+      background-image: url('images/custom-background.jpg');
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-attachment: fixed;
+      padding: 20px;
+      font-family: 'Poppins', sans-serif;
+      color: #a48484;
+      position: relative;
+    }
+
+    /* Header Styles */
+    header {
+      text-align: center;
+      color: rgb(58, 44, 44);
+      font-size: 2.5rem;
+      font-weight: bold;
+      font-family: 'Dancing Script', cursive;
+      margin-bottom: 20px;
+    }
+
+    /* Location Form Styles */
+    #locationform {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 30px;
+    }
+
+    .form-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.8);
+      padding: 10px 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .form-group label {
+      font-size: 1.1rem;
+      color: #3a2c2c;
+    }
+
+    .form-group select {
+      padding: 8px 12px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      outline: none;
+    }
+
+    /* Next Button Styles */
+    .next-button {
+      position: absolute;
+      top: 20px;
+      right: 100px;
+      background-color: rgb(58, 44, 44);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 10px 15px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.3s;
+    }
+
+    .next-button:hover {
+      background-color: rgb(58, 44, 44);
+      transform: scale(1.1);
+    }
+
+    /* Main Section */
+    main {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 50px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    /* Option Card Styles */
+    .option-card {
+      width: 250px;
+      height: 350px;
+      background: rgba(228, 220, 220, 0.6);
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+      text-align: center;
+    }
+
+    .option-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+      background: linear-gradient(to bottom right, rgba(229, 207, 205, 0.8), rgba(185, 129, 139, 0.8));
+    }
+
+    .option-card img {
+      width: 90%;
+      height: 180px;
+      object-fit: cover;
+      margin-bottom: 20px;
+      border-radius: 10px;
+      transition: transform 0.3s;
+    }
+
+    .option-card:hover img {
+      transform: scale(1.1);
+    }
+
+    .option-card h2 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: bold;
+      color: #2d3436;
+      text-transform: uppercase;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    /* Responsive Styles */
+    @media (max-width: 768px) {
+      main {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .option-card {
+        width: 90%;
+        height: auto;
+      }
+
+      .next-button {
+        right: 20px;
+        top: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Explore Your Destination</h1>
+  </header>
+  <form id="locationform">
+    <div class="form-group">
+      <label for="location">Location:</label>
+      <select id="location" name="location" required>
+        <option value="" disabled selected>Select your city</option>
+        <option value="Bhimavaram">Bhimavaram</option>
+        <option value="Palakollu">Palakollu</option>
+        <option value="Rajamundry">Rajamundry</option>
+        <option value="Vijayawada">Vijayawada</option>
+        <option value="Visakhapatnam">Visakhapatnam</option>
+      </select>
+    </div>
+  </form>
+  <h2 id="showlocation" style="text-align:center; color: #dba1a1;"></h2>
+  <button class="next-button" onclick="navigateToPage('conclusion')">Next</button>
+  <main>
+    <div class="option-card" onclick="navigateToPage('hotels')">
+      <img 
+        src="https://thumbs.dreamstime.com/b/luxury-hotel-room-master-bedroom-creative-ai-design-background-instagram-facebook-wall-painting-photo-wallpaper-backgrounds-325040660.jpg" 
+        alt="Hotels">
+      <h2>Hotels</h2>
+    </div>
+    <div class="option-card" onclick="navigateToPage('restaurants')">
+      <img 
+        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQJ0EqHI6h5QgFTXGG_1i2FADG1xulRbVtecA&s" 
+        alt="Restaurants">
+      <h2>Restaurants</h2>
+    </div>
+    <div class="option-card" onclick="navigateToPage('tourist-places')">
+      <img 
+        src="https://vj-prod-website-cms.s3.ap-southeast-1.amazonaws.com/g2-1716175948461.jpg" 
+        alt="Tourist Places">
+      <h2>Tourist Places</h2>
+    </div>
+  </main>
+  <script>
+    // Function to handle navigation
+    function navigateToPage(page){
+      if (page === 'hotels'){
+        window.location.href = "hotels.html";
+      } else if (page === 'restaurants') {
+        window.location.href = "rest.html";
+      } else if (page === 'tourist-places') {
+        window.location.href = "tourism.html";
+      } else if (page === 'conclusion') {
+        window.location.href = "conclusion.html";
+      }
+    }
+    document.getElementById('location').addEventListener('change', function () {
+    const selectedLocation = this.value;
+    if (selectedLocation){
+      localStorage.setItem('selectedLocation', selectedLocation);
+      console.log(`Location saved: ${selectedLocation}`);
+    }
+    document.getElementById('location').value = selectedLocation;
+  });
+
+  document.addEventListener('DOMContentLoaded',restoreSelection);
+  function restoreSelection() {
+            const savedLocation = localStorage.getItem('selectedLocation');
+            if (savedLocation) {
+                const dropdown = document.getElementById('location');
+                dropdown.value = savedLocation;
+            }
+        }
+  </script>
+</body>
+</html>

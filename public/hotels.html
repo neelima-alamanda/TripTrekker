@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Recommendations</title>
+    <style>
+        .Back-button{
+            text-align: left;
+            width: auto;
+        }
+        body {
+            background-image: url('images/custom-background.jpg');
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-attachment: fixed;
+            padding: 20px;
+            font-family: 'Poppins', sans-serif;
+            color: rgb(164, 132, 132);
+        }
+
+        /* Overlay effect */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: -1;
+        }
+
+        /* Container Styles */
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: rgba(81, 71, 71, 0.5);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(236, 36, 36, 0.2);
+            backdrop-filter: blur(12px);
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Header */
+        h1 {
+            text-align: center;
+            font-size: 32px;
+            color: #af7c82;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(24, 20, 20, 0.5);
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 5px;
+            color: #dba1a1;
+        }
+
+        select, button {
+            width: 100%;
+            padding: 12px;
+            font-size: 14px;
+            border-radius: 10px;
+            border: 1px solid #a34f4f;
+            background: rgba(163, 170, 176, 0.8);
+            box-sizing: border-box;
+            outline: none;
+            box-shadow: 0 2px 6px #b2353533;
+            transition: box-shadow 0.3s, background-color 0.3s;
+        }
+
+        select:focus, button:focus {
+            box-shadow: 0 4px 10px rgba(255, 255, 255, 0.5);
+            background-color: rgb(203, 185, 185);
+        }
+
+        /* Button Styles */
+        button {
+            background-color: #3b2020;
+            color: #ac9a9a;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 4px 12px rgba(228, 181, 181, 0.205);
+        }
+
+        button:hover {
+            background-color: #965656;
+            box-shadow: 0 6px 16px rgba(178, 191, 203, 0.7);
+            transform: translateY(-2px);
+        }
+
+        /* Hotel Details Section */
+        .hotel {
+    margin-bottom: 20px;
+    text-align: center;
+    background: linear-gradient(to right,  rgb(164, 132, 132,0.4), rgba(255, 230, 230, 0.4)); /* Light gradient with low opacity */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width:auto; /* Adjust width as per your design */
+}
+        #hotelDetails {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        #hotelDetails h2 {
+            color: #563333a9; 
+        }
+
+        #hotelDetails p {
+            color:  #ffffff;
+            
+        }
+    
+    </style>
+      <button class="Back-button" onclick="navigateToPage('preview')">Back</button>
+
+</head>
+<body>
+    <div class="container">
+        <h1>Find Your Perfect Hotel</h1>
+        <h2 id="selectedLocationHeader" style="text-align:center; color: #dba1a1;"></h2>
+            <div class="form-group">
+                <label for="budget">Budget:</label>
+                <select id="budget" name="budget" required>
+                    <option value="" disabled selected>Select your budget range</option>
+                    <option value="1000">₹1000 </option>
+                    <option value="3000">₹3000</option>
+                    <option value="5000">₹5000 </option>
+                    <option value="7000">₹7000 </option>
+                    <option value="10000">₹10000+</option>
+                </select>
+            </div>
+            <button type="button" onclick="recommendHotel()">Recommend</button>
+        <div id="hotelDetails"></div>
+    </div>
+
+    <script>
+
+        window.addEventListener('DOMContentLoaded', () => {
+        // Load saved location from local storage on page load
+        const savedLocation = localStorage.getItem('selectedLocation');
+        const locationHeader = document.getElementById('selectedLocationHeader');
+
+            if (savedLocation) {
+                locationHeader.textContent = `Selected Location: ${savedLocation}`;
+            } else {
+                locationHeader.textContent = "No location selected yet.";
+            }
+        if (savedLocation) {
+            console.log(`Previously selected location: ${savedLocation}`);
+        } else {
+            console.log("No location selected yet.");
+        }
+        });
+        function recommendHotel() {
+            const location = localStorage.getItem('selectedLocation');
+            const budget = document.getElementById('budget').value;
+            localStorage.setItem('selectedBudget', budget);
+
+            // Simple validation
+            if (!location || !budget || budget <= 0) {
+                alert("Please select a location and budget.");
+                return;
+            }
+
+            const recommendations = {
+    "Palakollu": [
+        { name: "Hotel Sri Kanya", address: "Main Road, Palakollu", rating: "4.2", priceRange: "₹500 - ₹1000" },
+        { name: "Palakollu Residency", address: "Near Railway Station, Palakollu", rating: "4.0", priceRange: "₹500 - ₹2000" },
+        { name: "Hotel Green Palace", address: "Ring Road, Palakollu", rating: "4.1", priceRange: "₹2000 - ₹3000" },
+        { name: "Grand Stay Inn", address: "Market Road, Palakollu", rating: "4.3", priceRange: "₹3000 - ₹4000" },
+        { name: "Comfort Suites", address: "Highway Road, Palakollu", rating: "4.4", priceRange: "₹4000 - ₹5000" },
+        { name: "Luxury Inn", address: "City Center, Palakollu", rating: "4.5", priceRange: "₹5000 - ₹6000" },
+        { name: "Royal Residency", address: "Station Road, Palakollu", rating: "4.6", priceRange: "₹6000 - ₹7000" }
+    ],
+    "Rajahmundry": [
+        { name: "Hotel River Bay", address: "River Bay Road, Rajahmundry", rating: "4.5", priceRange: "₹500 - ₹1000" },
+        { name: "Anand Regency", address: "Main Road, Rajahmundry", rating: "4.3", priceRange: "₹1000 - ₹2000" },
+        { name: "Godavari Inn", address: "Park Road, Rajahmundry", rating: "4.2", priceRange: "₹2000 - ₹3000" },
+        { name: "Hotel Elite", address: "Market Area, Rajahmundry", rating: "4.4", priceRange: "₹3000 - ₹4000" },
+        { name: "Premium Stays", address: "Airport Road, Rajahmundry", rating: "4.5", priceRange: "₹4000 - ₹5000" },
+        { name: "Luxury Retreat", address: "City Outskirts, Rajahmundry", rating: "4.6", priceRange: "₹5000 - ₹6000" },
+        { name: "Heritage Residency", address: "Near Temple, Rajahmundry", rating: "4.7", priceRange: "₹6000 - ₹7000" }
+    ],
+    "Vijayawada": [
+        { name: "Hotel Sunrise", address: "Bus Stand, Vijayawada", rating: "4.1", priceRange: "₹500 - ₹1000" },
+        { name: "Hotel City Stay", address: "MG Road, Vijayawada", rating: "4.3", priceRange: "₹1000 - ₹2000" },
+        { name: "Comfort Inn", address: "Airport Road, Vijayawada", rating: "4.4", priceRange: "₹2000 - ₹3000" },
+        { name: "Hotel Bliss", address: "Ring Road, Vijayawada", rating: "4.5", priceRange: "₹3000 - ₹4000" },
+        { name: "Premium Hotel", address: "Highway Road, Vijayawada", rating: "4.6", priceRange: "₹4000 - ₹5000" },
+        { name: "The Elite", address: "City Center, Vijayawada", rating: "4.7", priceRange: "₹5000 - ₹6000" },
+        { name: "Royal Heritage", address: "Downtown, Vijayawada", rating: "4.8", priceRange: "₹6000 - ₹7000" }
+    ],
+    "Visakhapatnam": [
+        { name: "Beachfront Inn", address: "R K Beach, Visakhapatnam", rating: "4.2", priceRange: "₹500 - ₹1000" },
+        { name: "Sea View Residency", address: "Park Road, Visakhapatnam", rating: "4.4", priceRange: "₹1000 - ₹2000" },
+        { name: "Bay Stay", address: "Airport Road, Visakhapatnam", rating: "4.5", priceRange: "₹2000 - ₹3000" },
+        { name: "Ocean Paradise", address: "Ring Road, Visakhapatnam", rating: "4.6", priceRange: "₹3000 - ₹4000" },
+        { name: "Premium Shoreline", address: "City Center, Visakhapatnam", rating: "4.7", priceRange: "₹4000 - ₹5000" },
+        { name: "Blue Horizon", address: "Market Area, Visakhapatnam", rating: "4.8", priceRange: "₹5000 - ₹6000" },
+        { name: "Luxury Wave", address: "Downtown, Visakhapatnam", rating: "4.9", priceRange: "₹6000 - ₹7000" }
+    ],
+    "Guntur": [
+        { name: "Hotel Lotus", address: "Railway Station Road, Guntur", rating: "4.1", priceRange: "₹500 - ₹1000" },
+        { name: "City Comfort", address: "Ring Road, Guntur", rating: "4.3", priceRange: "₹1000 - ₹2000" },
+        { name: "Elite Stay", address: "Market Area, Guntur", rating: "4.4", priceRange: "₹2000 - ₹3000" },
+        { name: "Premium Inn", address: "Airport Road, Guntur", rating: "4.5", priceRange: "₹3000 - ₹4000" },
+        { name: "Grand Residency", address: "City Outskirts, Guntur", rating: "4.6", priceRange: "₹4000 - ₹5000" },
+        { name: "Royal Comforts", address: "Temple Road, Guntur", rating: "4.7", priceRange: "₹5000 - ₹6000" },
+        { name: "Heritage Lodge", address: "Downtown, Guntur", rating: "4.8", priceRange: "₹6000 - ₹7000" }
+    ],
+    "Bhimavaram": [
+        { name: "Hotel City Lights", address: "Market Road, Bhimavaram", rating: "4.1", priceRange: "₹500 - ₹1000" },
+        { name: "Cosy Stay", address: "Main Road, Bhimavaram", rating: "4.2", priceRange: "₹1000 - ₹2000" },
+        { name: "Budget Inn", address: "Bus Stand, Bhimavaram", rating: "4.3", priceRange: "₹2000 - ₹3000" },
+        { name: "Grand Stay", address: "Ring Road, Bhimavaram", rating: "4.4", priceRange: "₹3000 - ₹4000" },
+        { name: "Comfort Suites", address: "Highway Road, Bhimavaram", rating: "4.5", priceRange: "₹4000 - ₹5000" },
+        { name: "Luxury Inn", address: "City Center, Bhimavaram", rating: "4.6", priceRange: "₹5000 - ₹6000" },
+        { name: "Royal Stay", address: "Station Road, Bhimavaram", rating: "4.7", priceRange: "₹6000 - ₹7000" }
+    ]
+};
+
+
+            const cityRecommendations = recommendations[location];
+
+            // Filter hotels based on budget
+            const filteredHotels = cityRecommendations.filter(hotel => parseInt(hotel.priceRange.replace('₹', '')) <= parseInt(budget));
+
+            const hotelDetails = document.getElementById('hotelDetails');
+            hotelDetails.innerHTML = ""; // Clear previous results
+            if (filteredHotels.length === 0) {
+                hotelDetails.innerHTML = "<p>No hotels found within your budget.</p>";
+            } else {
+                filteredHotels.forEach(hotel => {
+                    const hotelDiv = document.createElement("div");
+                    hotelDiv.className = "hotel";
+                    hotelDiv.innerHTML = ` 
+                    <h2>${hotel.name}</h2>
+                        <p >Location: ${hotel.address}</p>
+                        <p>Price: ${hotel.priceRange}</p>
+                        <p>Rating: ${hotel.rating}</p>
+    
+                    `;
+                    hotelDetails.appendChild(hotelDiv);
+                });
+            }
+        }
+    function navigateToPage(page) {
+      if (page === 'preview') {
+        window.location.href = "preview.html";
+      } 
+    }
+    </script>
+</body>
+</html>
