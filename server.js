@@ -19,7 +19,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(_dirname, 'public')));
 
 // MongoDB Connection
-mongoose.connect('mongodb+srv://revathi3634:dtDQZWopM8oacqYZ@mango.95fcp.mongodb.net/', {
+mongoose.connect('mongodb+srv:', {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 })
@@ -112,7 +112,7 @@ const fetchTourism = async (city) => {
     if (!coordinates) return [];
 
     const [latitude, longitude] = coordinates;
-    const apiKey = 'c8448827ea1c4dd1b915e32f5a895c9b';
+    const apiKey = '';
     const url = `https://api.geoapify.com/v2/places?categories=tourism.attraction&conditions=named&filter=circle:${longitude},${latitude},5000&bias=proximity:${longitude},${latitude}&lang=en&limit=10&apiKey=${apiKey}`;
 
     try {
@@ -149,7 +149,7 @@ const fetchHotels = async (city) => {
     if (!coordinates) return [];
 
     const [latitude, longitude] = coordinates;
-    const apiKey = 'c8448827ea1c4dd1b915e32f5a895c9b';
+    const apiKey = '';
     const url = `https://api.geoapify.com/v2/places?categories=accommodation.hotel&conditions=named&filter=circle:${longitude},${latitude},5000&bias=proximity:${longitude},${latitude}&lang=en&limit=10&apiKey=${apiKey}`;
 
     try {
@@ -208,7 +208,7 @@ const fetchRestaurants = async (city) => {
     if (!coordinates) return [];
 
     const [latitude, longitude] = coordinates;
-    const apiKey = 'c8448827ea1c4dd1b915e32f5a895c9b';
+    const apiKey = '';
     const url = `https://api.geoapify.com/v2/places?categories=catering.restaurant&conditions=named&filter=circle:${longitude},${latitude},5000&bias=proximity:${longitude},${latitude}&lang=en&limit=10&apiKey=${apiKey}`;
 
     try {
