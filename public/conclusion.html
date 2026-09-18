@@ -1,163 +1,851 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>About TripTrekker</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
-  <style>
-    /* General Styles */
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: 'Poppins', sans-serif;
-      color: #333;
-      background-image: url('images/custom-background.jpg');
-      background-position: center;
-      background-size: cover;
-      background-attachment: fixed;
-      background-repeat: no-repeat;
-    }
 
-    /* Header */
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 15px 30px;
-      background-color: rgba(0, 0, 0, 0.7);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
+    <meta charset="UTF-8">
 
-    header .logo {
-      display: flex;
-      align-items: center;
-    }
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
 
-    header .logo img {
-      height: 40px;
-      margin-right: 10px;
-    }
+    <title>Your Trip Plan</title>
 
-    header .logo h1 {
-      font-size: 1.8em;
-      color: #fff;
-      font-family: 'Dancing Script', cursive;
-    }
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Dancing+Script:wght@700&display=swap"
+        rel="stylesheet">
 
-    /* Logout Button */
-    .logout-button {
-      background-color: rgb(58,44,44);
-      color: white;
-      border: none;
-      border-radius: 5px;
-      padding: 10px 20px;
-      font-size: 14px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background-color 0.3s, transform 0.3s;
-    }
+    <style>
 
-    .logout-button:hover {
-      background-color:rgb(111, 96, 96);
-      transform: scale(1.1);
-    }
+        * {
+            box-sizing: border-box;
+        }
 
-    /* Main Section */
-    main {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: calc(100vh - 80px);
-      text-align: center;
-      padding: 20px;
-    }
+        body {
+            margin: 0;
 
-    .about {
-      background: rgba(217, 194, 194, 0.8);
-      padding: 30px;
-      border-radius: 15px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-      max-width: 800px;
-    }
+            min-height: 100vh;
 
-    .about h2 {
-      font-size: 2.5em;
-      margin-bottom: 20px;
-      font-family: 'Dancing Script', cursive;
-      color: #1c1c1c;
-    }
+            background-image: url('images/custom-background.jpg');
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-attachment: fixed;
 
-    .about p {
-      font-size: 1.2em;
-      line-height: 1.8;
-      color: #444;
-      margin-bottom: 15px;
-    }
+            font-family: 'Poppins', sans-serif;
 
-    /* Footer */
-    footer {
-      text-align: center;
-      padding: 15px 0;
-      background-color: rgba(0, 0, 0, 0.7);
-      font-size: 0.9em;
-      color: #fff;
-    }
+            color: #ffffff;
 
-    .about .left-align {
-      text-align: left;
-      margin: 0; /* Remove margin between paragraphs */
-    }
-  </style>
+            position: relative;
+        }
+
+        body::before {
+            content: "";
+
+            position: fixed;
+
+            inset: 0;
+
+            background: rgba(0, 0, 0, 0.65);
+
+            z-index: -1;
+        }
+
+        header {
+            text-align: center;
+
+            padding: 20px;
+        }
+
+        .logo {
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            gap: 12px;
+        }
+
+        .logo img {
+            width: 55px;
+
+            height: 55px;
+
+            object-fit: contain;
+        }
+
+        .logo h1 {
+            margin: 0;
+
+            color: #dba1a1;
+
+            font-family: 'Dancing Script', cursive;
+
+            font-size: 42px;
+        }
+
+        main {
+            padding: 20px;
+        }
+
+        .about {
+            max-width: 700px;
+
+            margin: auto;
+
+            padding: 25px;
+
+            background: rgba(81, 71, 71, 0.55);
+
+            border-radius: 20px;
+
+            backdrop-filter: blur(12px);
+
+            box-shadow:
+                0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .about h2 {
+            text-align: center;
+
+            color: #dba1a1;
+
+            margin-bottom: 25px;
+        }
+
+        .summary-box {
+            padding: 18px;
+
+            margin-bottom: 25px;
+
+            background:
+                rgba(255, 255, 255, 0.1);
+
+            border-radius: 12px;
+
+            line-height: 1.8;
+        }
+
+        .summary-box h3 {
+            color: #dba1a1;
+
+            margin-top: 0;
+        }
+
+        .form-row {
+            display: flex;
+
+            gap: 15px;
+
+            margin-bottom: 15px;
+        }
+
+        .form-row > div {
+            flex: 1;
+        }
+
+        label {
+            display: block;
+
+            margin-bottom: 6px;
+
+            color: #dba1a1;
+
+            font-weight: 600;
+        }
+
+        input {
+            width: 100%;
+
+            padding: 12px;
+
+            border-radius: 10px;
+
+            border: 1px solid #a34f4f;
+
+            background:
+                rgba(163, 170, 176, 0.8);
+
+            font-size: 14px;
+
+            outline: none;
+        }
+
+        .calc-button,
+        .logout-button {
+            width: 100%;
+
+            padding: 12px;
+
+            margin-top: 10px;
+
+            border: none;
+
+            border-radius: 10px;
+
+            background: #3b2020;
+
+            color: #ffffff;
+
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+        .calc-button:hover,
+        .logout-button:hover {
+            background: #965656;
+        }
+
+        #resultBox {
+            display: none;
+
+            margin-top: 20px;
+
+            padding: 20px;
+
+            border-radius: 12px;
+
+            line-height: 1.8;
+        }
+
+        .under-budget {
+            background:
+                rgba(76, 175, 80, 0.2);
+
+            border:
+                2px solid #4caf50;
+        }
+
+        .over-budget {
+            background:
+                rgba(244, 67, 54, 0.2);
+
+            border:
+                2px solid #f44336;
+        }
+
+        .note {
+            margin-top: 20px;
+
+            font-size: 12px;
+
+            color: #dddddd;
+
+            font-style: italic;
+
+            line-height: 1.6;
+        }
+
+        footer {
+            text-align: center;
+
+            padding: 20px;
+
+            color: #cccccc;
+
+            font-size: 13px;
+        }
+
+        @media (max-width: 600px) {
+
+            .form-row {
+                flex-direction: column;
+            }
+
+            .logo h1 {
+                font-size: 34px;
+            }
+        }
+
+    </style>
+
 </head>
+
 <body>
-  <header>
-    <div class="logo">
-      <img src="images/logoo.png" alt="TripTrekker Logo">
-      <h1>TripTrekker</h1>
-    </div>
-  </header>
-  <main>
-    <section class="about">
-      <h2>Your Travel Plan is Ready!</h2>
-      <h3 id="estimate">Estimated budget:</h3>
-      <p>Congratulations on setting up your travel destination. We’re thrilled to have assisted in simplifying your planning process.</p>
-      <p>At <strong>Trip Trekker</strong>, we strive to make every journey seamless and enjoyable. Thank you for trusting us with your travel needs.</p>
-      <p>Wishing you an incredible and memorable trip ahead.</p>
-      <!-- Logout Button -->
-      <button class="logout-button" onclick="logout()">Logout</button>
-    </section>
-  </main>
-  <footer>
-    <p>&copy; 2025 TripTrekker. All rights reserved.</p>
-  </footer>
 
-  <script>
-    // Function to handle logout
-    function logout() {
-      // Clear session or local storage if used
-      sessionStorage.clear();
-      localStorage.clear();
-      // Redirect to index.html
-      window.location.href = "index.html";
+    <header>
 
-      // Push a blank state and replace the current state to prevent going back
-      window.history.pushState(null, null, "index.html");
-      window.history.replaceState(null, null, "index.html");
+        <div class="logo">
 
-      // Add an event listener to prevent back navigation
-      window.addEventListener("popstate", function () {
-        window.location.href = "index.html";
-      });
-    }
-    // Get the selectedBudget from localStorage
-let selectedBudget = parseInt(localStorage.getItem('selectedBudget')) || 0;
+            <img
+                src="images/logo.png"
+                alt="TripTrekker Logo">
 
-// Update the content of the <h3> element with the selectedBudget value
-document.getElementById('estimate').textContent = `Estimated budget: ${selectedBudget}`;
+            <h1>TripTrekker</h1>
 
-  </script>
+        </div>
+
+    </header>
+
+    <main>
+
+        <section class="about">
+
+            <h2>Your Travel Plan</h2>
+
+            <div
+                class="summary-box"
+                id="selectionSummary">
+            </div>
+
+            <div class="form-row">
+
+                <div>
+
+                    <label for="travellers">
+                        Number of travellers
+                    </label>
+
+                    <input
+                        type="number"
+                        id="travellers"
+                        min="1"
+                        value="1">
+
+                </div>
+
+                <div>
+
+                    <label for="nights">
+                        Nights staying
+                    </label>
+
+                    <input
+                        type="number"
+                        id="nights"
+                        min="1"
+                        value="1">
+
+                </div>
+
+            </div>
+
+            <div class="form-row">
+
+                <div>
+
+                    <label for="mealsPerDay">
+                        Meals per person/day
+                    </label>
+
+                    <input
+                        type="number"
+                        id="mealsPerDay"
+                        min="1"
+                        value="2">
+
+                </div>
+
+            </div>
+
+            <div class="form-row">
+
+                <div>
+
+                    <label for="totalBudget">
+                        Your total trip budget (₹)
+                    </label>
+
+                    <input
+                        type="number"
+                        id="totalBudget"
+                        min="0"
+                        placeholder="e.g. 10000">
+
+                </div>
+
+            </div>
+
+            <button
+                class="calc-button"
+                onclick="calculateBudget()">
+
+                Calculate My Trip Cost
+
+            </button>
+
+            <div id="resultBox"></div>
+
+            <p class="note">
+
+                Hotel and restaurant amounts are budget estimates
+                selected by you because Geoapify does not provide
+                reliable live room or menu prices. Attraction
+                calculations include only known fees available in
+                the TripTrekker attraction data. Actual costs may
+                differ.
+
+            </p>
+
+            <button
+                class="logout-button"
+                onclick="logout()">
+
+                Logout
+
+            </button>
+
+        </section>
+
+    </main>
+
+    <footer>
+
+        <p>
+            &copy; 2026 TripTrekker. All rights reserved.
+        </p>
+
+    </footer>
+
+    <script>
+
+        function getSelections() {
+
+            const attractions =
+                JSON.parse(
+                    localStorage.getItem(
+                        'selectedAttractions'
+                    ) || '[]'
+                );
+
+            const hotelPrice =
+                parseFloat(
+                    localStorage.getItem(
+                        'selectedHotelPrice'
+                    )
+                ) || 0;
+
+            const restaurantPrice =
+                parseFloat(
+                    localStorage.getItem(
+                        'selectedRestaurantPrice'
+                    )
+                ) || 0;
+
+            const attractionsTotal =
+                attractions.reduce(
+                    (sum, attraction) => {
+
+                        if (
+                            typeof attraction.price ===
+                            'number'
+                        ) {
+                            return sum + attraction.price;
+                        }
+
+                        return sum;
+
+                    },
+                    0
+                );
+
+            const unknownAttractions =
+                attractions.filter(
+                    attraction =>
+                        typeof attraction.price !==
+                        'number'
+                );
+
+            return {
+
+                location:
+                    localStorage.getItem(
+                        'selectedLocation'
+                    ) || 'Not selected',
+
+                hotelName:
+                    localStorage.getItem(
+                        'selectedHotelName'
+                    ),
+
+                hotelPrice,
+
+                restaurantName:
+                    localStorage.getItem(
+                        'selectedRestaurantName'
+                    ),
+
+                restaurantPrice,
+
+                attractions,
+
+                attractionsTotal,
+
+                unknownAttractions
+            };
+        }
+
+        function renderSelectionSummary() {
+
+            const selections =
+                getSelections();
+
+            const summary =
+                document.getElementById(
+                    'selectionSummary'
+                );
+
+            let attractionText =
+                'No attractions selected.';
+
+            if (
+                selections.attractions.length > 0
+            ) {
+
+                attractionText =
+                    selections.attractions
+                        .map(
+                            attraction =>
+                                `<li>${escapeHtml(
+                                    attraction.name
+                                )}</li>`
+                        )
+                        .join('');
+
+                attractionText =
+                    `<ul>${attractionText}</ul>`;
+            }
+
+            summary.innerHTML = `
+
+                <h3>
+                    Selected Destination:
+                    ${escapeHtml(
+                        selections.location
+                    )}
+                </h3>
+
+                <p>
+                    <strong>Hotel:</strong>
+                    ${selections.hotelName
+                        ? escapeHtml(
+                            selections.hotelName
+                          )
+                        : 'Not selected'}
+                </p>
+
+                <p>
+                    <strong>Food:</strong>
+                    ${selections.restaurantName
+                        ? escapeHtml(
+                            selections.restaurantName
+                          )
+                        : 'Not selected'}
+                </p>
+
+                <p>
+                    <strong>Tourist attractions:</strong>
+                </p>
+
+                ${attractionText}
+
+            `;
+        }
+
+        function calculateBudget() {
+
+            const selections =
+                getSelections();
+
+            const travellers =
+                parseInt(
+                    document.getElementById(
+                        'travellers'
+                    ).value
+                ) || 1;
+
+            const nights =
+                parseInt(
+                    document.getElementById(
+                        'nights'
+                    ).value
+                ) || 1;
+
+            const mealsPerDay =
+                parseInt(
+                    document.getElementById(
+                        'mealsPerDay'
+                    ).value
+                ) || 1;
+
+            const totalBudget =
+                parseFloat(
+                    document.getElementById(
+                        'totalBudget'
+                    ).value
+                );
+
+            const resultBox =
+                document.getElementById(
+                    'resultBox'
+                );
+
+            if (
+                !totalBudget ||
+                totalBudget <= 0
+            ) {
+
+                resultBox.style.display =
+                    'block';
+
+                resultBox.className =
+                    'over-budget';
+
+                resultBox.textContent =
+                    'Please enter your total trip budget first.';
+
+                return;
+            }
+
+            /*
+             * If a trip has N nights,
+             * it normally spans N + 1 calendar days.
+             *
+             * Hotel uses nights.
+             * Food uses trip days.
+             */
+
+            const tripDays =
+                nights + 1;
+
+            const hotelCost =
+                selections.hotelPrice *
+                nights;
+
+            const foodCost =
+                selections.restaurantPrice *
+                mealsPerDay *
+                travellers *
+                tripDays;
+
+            const attractionsCost =
+                selections.attractionsTotal;
+
+            const totalCost =
+                hotelCost +
+                foodCost +
+                attractionsCost;
+
+            const remaining =
+                totalBudget -
+                totalCost;
+
+            localStorage.setItem(
+                'selectedBudget',
+                String(totalBudget)
+            );
+
+            localStorage.setItem(
+                'estimatedTripCost',
+                String(totalCost)
+            );
+
+            resultBox.style.display =
+                'block';
+
+            const hotelLine =
+                selections.hotelName
+                    ? `₹${selections.hotelPrice}
+                       × ${nights} night(s)`
+                    : 'No hotel selected';
+
+            const foodLine =
+                selections.restaurantName
+                    ? `₹${selections.restaurantPrice}
+                       × ${mealsPerDay} meals/day
+                       × ${travellers} traveller(s)
+                       × ${tripDays} day(s)`
+                    : 'No restaurant selected';
+
+            const attractionLine =
+                `₹${attractionsCost}
+                 (${selections.attractions.length}
+                 selected)`;
+
+            let unknownFeeMessage = '';
+
+            if (
+                selections.unknownAttractions.length > 0
+            ) {
+
+                unknownFeeMessage = `
+
+                    <p>
+                        <strong>
+                            Note:
+                        </strong>
+
+                        Entry fees for
+                        ${selections.unknownAttractions.length}
+                        selected attraction(s) were not
+                        included because a reliable fee was
+                        not available.
+                    </p>
+
+                `;
+            }
+
+            const breakdown = `
+
+                <p>
+                    <strong>Hotel estimate:</strong>
+                    ₹${hotelCost}
+                    <br>
+                    <small>
+                        ${hotelLine}
+                    </small>
+                </p>
+
+                <p>
+                    <strong>Food estimate:</strong>
+                    ₹${foodCost}
+                    <br>
+                    <small>
+                        ${foodLine}
+                    </small>
+                </p>
+
+                <p>
+                    <strong>Known attraction fees:</strong>
+                    ₹${attractionsCost}
+                    <br>
+                    <small>
+                        ${attractionLine}
+                    </small>
+                </p>
+
+                <hr>
+
+                <p>
+                    <strong>
+                        Total estimated trip cost:
+                        ₹${totalCost}
+                    </strong>
+                </p>
+
+                <p>
+                    <strong>
+                        Your budget:
+                        ₹${totalBudget}
+                    </strong>
+                </p>
+
+                ${unknownFeeMessage}
+
+            `;
+
+            if (remaining >= 0) {
+
+                resultBox.className =
+                    'under-budget';
+
+                resultBox.innerHTML = `
+
+                    <strong>
+                        Estimated plan is within your budget.
+                    </strong>
+
+                    <p>
+                        Estimated amount remaining:
+                        ₹${remaining}
+                    </p>
+
+                    ${breakdown}
+
+                `;
+
+            } else {
+
+                resultBox.className =
+                    'over-budget';
+
+                resultBox.innerHTML = `
+
+                    <strong>
+                        Estimated plan exceeds your budget.
+                    </strong>
+
+                    <p>
+                        Estimated amount over budget:
+                        ₹${Math.abs(remaining)}
+                    </p>
+
+                    ${breakdown}
+
+                `;
+            }
+        }
+
+        function logout() {
+
+            /*
+             * Keep trip selections until logout,
+             * then clear user/session-related data.
+             */
+
+            localStorage.removeItem(
+                'selectedLocation'
+            );
+
+            localStorage.removeItem(
+                'selectedAttractions'
+            );
+
+            localStorage.removeItem(
+                'selectedHotelName'
+            );
+
+            localStorage.removeItem(
+                'selectedHotelPrice'
+            );
+
+            localStorage.removeItem(
+                'hotelBudget'
+            );
+
+            localStorage.removeItem(
+                'selectedRestaurantName'
+            );
+
+            localStorage.removeItem(
+                'selectedRestaurantPrice'
+            );
+
+            localStorage.removeItem(
+                'restaurantBudget'
+            );
+
+            localStorage.removeItem(
+                'selectedBudget'
+            );
+
+            localStorage.removeItem(
+                'estimatedTripCost'
+            );
+
+            window.location.href =
+                'login.html';
+        }
+
+        function escapeHtml(value) {
+
+            const div =
+                document.createElement('div');
+
+            div.textContent = value;
+
+            return div.innerHTML;
+        }
+
+        document.addEventListener(
+            'DOMContentLoaded',
+            renderSelectionSummary
+        );
+
+    </script>
+
 </body>
+
 </html>
