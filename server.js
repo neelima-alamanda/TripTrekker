@@ -2,27 +2,29 @@ import express from 'express';
 import mongoose from 'mongoose';
 import fetch from 'node-fetch';
 import path from 'path';
+import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 
+dotenv.config();
+
 const app = express();
-const PORT = 3000;
+const PORT = 3001;
+
+const GEOAPIFY_API_KEY = process.env.GEOAPIFY_API_KEY;
 
 // To resolve __dirname when using ES modules
 const __filename = fileURLToPath(import.meta.url);
-const _dirname = path.dirname(__filename);
+const __dirname = path.dirname(__filename);
 
 // Middleware to parse JSON requests
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Serve static HTML files from the public directory
 app.use(express.static(path.join(_dirname, 'public')));
 
-// MongoDB Connection
-mongoose.connect('mongodb+srv:', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-})
+mongoose.connect(process.env.MONGODB_URI)
     .then(() => console.log('MongoDB connection successful'))
     .catch(err => console.error('MongoDB connection error:', err));
 
@@ -38,32 +40,36 @@ const Users = mongoose.model('User', userSchema);
 // Routes
 // Serve signup page
 app.get('/signup', (req, res) => {
-    res.sendFile(path.resolve('public/signup.html'));
+    res.sendFile(path.join(__dirname, 'public', 'signup.html'));
 });
 
 // Serve preview page
 app.get('/preview', (req, res) => {
-    res.sendFile(path.resolve('public/preview.html'));
+    res.sendFile(path.join(__dirname, 'public', 'preview.html'));
 });
 
 // Serve hotels page
 app.get('/hotels', (req, res) => {
-    res.sendFile(path.resolve('public/hotels.html'));
+    res.sendFile(path.join(__dirname, 'public', 'hotels.html'));
 });
 
 // Serve restaurants page
 app.get('/restaurants', (req, res) => {
-    res.sendFile(path.resolve('public/restaurants.html'));
+    res.sendFile(path.join(__dirname, 'public', 'rest.html'));
 });
 
 // Serve rest page (redirect after login)
 app.get('/rest', (req, res) => {
-    res.sendFile(path.resolve('public/rest.html'));
+    res.sendFile(path.join(__dirname, 'public', 'rest.html'));
 });
 
 // Serve tourism page
 app.get('/tourism', (req, res) => {
-    res.sendFile(path.resolve('public/tourism.html'));
+    res.sendFile(path.join(__dirname, 'public', 'tourism.html'));
+});
+
+app.get('/conclusion', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'conclusion.html'));
 });
 
 // Handle Registration
@@ -71,20 +77,43 @@ app.post('/register', async (req, res) => {
     try {
         const { username, email, password } = req.body;
 
-        const existingUser = await Users.findOne({ $or: [{ email }, { username }] });
-        if (existingUser) {
+        if (!username || !email || !password) {
             return res.status(400).json({
-                error: 'Email or username already exists. Please use different credentials.',
+                error: 'All fields are required'
             });
         }
 
-        const user = new Users({ username, email, password });
+        const existing = await Users.findOne({
+            $or: [
+                { email },
+                { username }
+            ]
+        });
+
+        if (existing) {
+            return res.status(400).json({
+                error: 'Email or username already exists'
+            });
+        }
+
+        const user = new Users({
+            username,
+            email,
+            password
+        });
+
         await user.save();
-        console.log('New user registered:', user);
-        res.status(200).json({ message: 'Registration successful!' });
+
+        res.status(200).json({
+            message: 'Registration successful!'
+        });
+
     } catch (err) {
-        console.error('Error during registration:', err);
-        res.status(500).json({ error: 'An error occurred during registration. Please try again.' });
+        console.error('Registration error:', err);
+
+        res.status(500).json({
+            error: 'An error occurred during registration'
+        });
     }
 });
 
@@ -95,155 +124,455 @@ app.post('/login', async (req, res) => {
 
         const user = await Users.findOne({ username });
         if (!user || user.password !== password) {
-            return res.status(400).json({ error: 'Invalid username or password.' });
+            return res.status(400).json({
+                error: 'Invalid username or password'
+            });
         }
 
-        console.log('Login successful for user:', username);
-        res.status(200).json({ message: 'Login successful!', username });
+        res.status(200).json({
+            message: 'Login successful!',
+            username
+        });
+
     } catch (err) {
-        console.error('Error during login:', err);
-        res.status(500).json({ error: 'An error occurred during login. Please try again later.' });
+        console.error('Login error:', err);
+
+        res.status(500).json({
+            error: 'An error occurred during login'
+        });
     }
 });
 
-// Function to fetch tourist places
-const fetchTourism = async (city) => {
-    const coordinates = getCityCoordinates(city);
-    if (!coordinates) return [];
+/* =========================================================
+   VERIFIED / CURATED TOURIST ATTRACTIONS
+   ========================================================= */
 
-    const [latitude, longitude] = coordinates;
-    const apiKey = '';
-    const url = `https://api.geoapify.com/v2/places?categories=tourism.attraction&conditions=named&filter=circle:${longitude},${latitude},5000&bias=proximity:${longitude},${latitude}&lang=en&limit=10&apiKey=${apiKey}`;
+const verifiedAttractions = {
 
-    try {
-        const response = await fetch(url);
-        if (response.ok) {
-            const data = await response.json();
-            return data.features.map((place) => {
-                const properties = place.properties;
-                return {
-                    name: properties.name || 'N/A',
-                    address: properties.formatted || 'N/A',
-                };
-            });
-        } else {
-            console.error('API Error:', response.status, response.statusText);
-            return [];
+    Vijayawada: [
+        {
+            name: 'Kanaka Durga Temple',
+            address: 'Indrakeeladri, Vijayawada',
+            price: 0,
+            feeSource: 'Free'
+        },
+        {
+            name: 'Prakasam Barrage',
+            address: 'Krishna River, Vijayawada',
+            price: 0,
+            feeSource: 'Free'
+        },
+        {
+            name: 'Undavalli Caves',
+            address: 'Undavalli, Vijayawada',
+            price: 25,
+            feeSource: 'Verified estimate'
+        },
+        {
+            name: 'Bhavani Island',
+            address: 'Vijayawada',
+            price: 20,
+            feeSource: 'Verified estimate'
+        },
+        {
+            name: 'Gandhi Hill',
+            address: 'Vijayawada',
+            price: 20,
+            feeSource: 'Verified estimate'
+        },
+        {
+            name: 'Kondapalli Fort',
+            address: 'Kondapalli, Vijayawada',
+            price: 0,
+            feeSource: 'Free'
+        },
+        {
+            name: 'Mogalarajapuram Caves',
+            address: 'Vijayawada',
+            price: 5,
+            feeSource: 'Verified estimate'
         }
-    } catch (error) {
-        console.error('Fetch error:', error);
-        return [];
+    ],
+
+    Visakhapatnam: [
+        {
+            name: 'Kailasagiri',
+            address: 'Visakhapatnam',
+            price: 0,
+            feeSource: 'Free'
+        },
+        {
+            name: 'RK Beach',
+            address: 'Visakhapatnam',
+            price: 0,
+            feeSource: 'Free'
+        },
+        {
+            name: 'INS Kursura Submarine Museum',
+            address: 'RK Beach Road, Visakhapatnam',
+            price: 100,
+            feeSource: 'Verified estimate'
+        },
+        {
+            name: 'Simhachalam Temple',
+            address: 'Simhachalam, Visakhapatnam',
+            price: 0,
+            feeSource: 'Free'
+        },
+        {
+            name: 'Rushikonda Beach',
+            address: 'Visakhapatnam',
+            price: 0,
+            feeSource: 'Free'
+        }
+    ],
+
+    Bhimavaram: [
+        {
+            name: 'Someswara Temple',
+            address: 'Bhimavaram',
+            price: 0,
+            feeSource: 'Free'
+        },
+        {
+            name: 'Mavullamma Temple',
+            address: 'Bhimavaram',
+            price: 0,
+            feeSource: 'Free'
+        },
+        {
+            name: 'Perupalem Beach',
+            address: 'Perupalem, West Godavari',
+            price: 0,
+            feeSource: 'Free'
+        }
+    ],
+
+    Rajamundry: [
+        {
+            name: 'Godavari Bridge',
+            address: 'Rajahmundry',
+            price: 0,
+            feeSource: 'Free'
+        },
+        {
+            name: 'Kambala Park',
+            address: 'Rajahmundry',
+            price: 0,
+            feeSource: 'Free'
+        },
+        {
+            name: 'Pushkar Ghat',
+            address: 'Rajahmundry',
+            price: 0,
+            feeSource: 'Free'
+        }
+    ],
+
+    Palakollu: [
+        {
+            name: 'Ksheerarama Temple',
+            address: 'Palakollu',
+            price: 0,
+            feeSource: 'Free'
+        },
+        {
+            name: 'Perupalem Beach',
+            address: 'Perupalem',
+            price: 0,
+            feeSource: 'Free'
+        }
+    ],
+
+    Tirupati: [
+        {
+            name: 'Tirumala Venkateswara Temple',
+            address: 'Tirumala, Tirupati',
+            price: 0,
+            feeSource: 'Free'
+        }
+    ]
+};
+
+/* =========================================================
+   CITY COORDINATES
+   ========================================================= */
+
+const cityCoordinates = {
+    Anantapur: [14.6819, 77.6006],
+    Bhimavaram: [16.5449, 81.5212],
+    Chilakaluripet: [16.0892, 80.1670],
+    Chittoor: [13.2172, 79.1003],
+    Eluru: [16.7107, 81.0952],
+    Guntur: [16.3067, 80.4365],
+    Kadapa: [14.4674, 78.8241],
+    Kakinada: [16.9891, 82.2475],
+    Kurnool: [15.8281, 78.0373],
+    Machilipatnam: [16.1875, 81.1389],
+    Narasaraopet: [16.2350, 80.0498],
+    Nellore: [14.4426, 79.9865],
+    Ongole: [15.5057, 80.0499],
+    Palakollu: [16.5167, 81.7300],
+    Rajamundry: [16.9891, 81.2293],
+    Srikakulam: [18.2969, 83.8973],
+    Tadepalligudem: [16.8147, 81.5275],
+    Tenali: [16.2428, 80.6400],
+    Tirupati: [13.6288, 79.4192],
+    Vijayawada: [16.5062, 80.6480],
+    Vinukonda: [16.0531, 79.7396],
+    Visakhapatnam: [17.6868, 83.2185],
+    Vizianagaram: [18.1067, 83.3956]
+};
+
+function getCityCoordinates(city) {
+    return cityCoordinates[city] || null;
+}
+
+/* =========================================================
+   GEOAPIFY HELPERS
+   ========================================================= */
+
+async function fetchGeoapify(url) {
+
+    if (!GEOAPIFY_API_KEY) {
+        throw new Error('GEOAPIFY_API_KEY is missing in .env');
     }
 };
 
-// API endpoint to get tourism places
-app.post('/get_tourist_attractions', async (req, res) => {
-    const { city } = req.body;
-    const tourism = await fetchTourism(city);
-    res.json(tourism);
-});
+    const separator = url.includes('?') ? '&' : '?';
+
+    const response = await fetch(
+        `${url}${separator}apiKey=${encodeURIComponent(GEOAPIFY_API_KEY)}`
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(
+            data.message || `Geoapify error ${response.status}`
+        );
+    }
+
+    if (!Array.isArray(data.features)) {
+        throw new Error('Geoapify response missing features');
+    }
+
+    return data.features;
+}
+
+/* =========================================================
+   TOURISM
+   ========================================================= */
+
+async function fetchTourism(city) {
+
+    /*
+     * Locked architecture:
+     *
+     * 1. Use curated/verified attractions where available.
+     * 2. Do NOT return random places of worship as tourist
+     *    attractions.
+     * 3. For cities without a curated list, use Geoapify only
+     *    for genuine tourism/sight/museum categories.
+     */
+
+    if (verifiedAttractions[city]) {
+        return verifiedAttractions[city];
+    }
 
 // Function to fetch hotels
 const fetchHotels = async (city) => {
     const coordinates = getCityCoordinates(city);
     if (!coordinates) return [];
 
-    const [latitude, longitude] = coordinates;
-    const apiKey = '';
-    const url = `https://api.geoapify.com/v2/places?categories=accommodation.hotel&conditions=named&filter=circle:${longitude},${latitude},5000&bias=proximity:${longitude},${latitude}&lang=en&limit=10&apiKey=${apiKey}`;
-
-    try {
-        const response = await fetch(url);
-        if (response.ok) {
-            const data = await response.json();
-            return data.features.map((place) => {
-                const properties = place.properties;
-                return {
-                    name: properties.name || 'N/A',
-                    address: properties.formatted || 'N/A',
-                };
-            });
-        } else {
-            console.error('API Error:', response.status, response.statusText);
-            return [];
-        }
-    } catch (error) {
-        console.error('Fetch error:', error);
+    if (!coordinates) {
         return [];
     }
-};
-// Function to get city coordinates
-const getCityCoordinates = (city) => {
-    const cityCoordinates = {
-        Vijayawada: ["16.506174", "80.648015"],
-        Visakhapatnam: ["17.686816", "83.218482"],
-        Tirupati: ["13.628755", "79.419179"],
-        Guntur: ["16.306652", "80.436540"],
-        Kurnool: ["15.828126", "78.037279"],
-        Nellore: ["14.4421", "79.9985"],
-        Kakinada: ["16.9513959", "82.23381494658508"],
-        Rajamahendravaram: ["16.9975", "81.7785"],
-        Kadapa: ["14.4701", "78.8243"],
-        Anantapur: ["14.6825", "77.5994"],
-        Ongole: ["15.5019", "80.0482"],
-        Vizianagaram: ["18.1167", "83.4167"],
-        Eluru: ["16.7000", "81.1300"],
-        Machilipatnam: ["16.1833", "81.1333"],
-        Tenali: ["16.2494", "80.5578"],
-        Chittoor: ["13.2167", "79.4167"],
-        Srikakulam: ["18.3000", "84.3000"],
-        Bhimavaram: ["16.5333", "81.6333"],
-        Tadepalligudem: ["16.8500", "81.3000"],
-        Narasaraopet: ["16.0833", "80.2500"],
-        Chilakaluripet: ["16.0333", "80.0333"],
-        Vinukonda: ["15.7000", "79.2000"],
-    };
-    return cityCoordinates[city] || null; // Return null if the city is not found
-};
 
+    const [lat, lon] = coordinates;
+
+    const url =
+        'https://api.geoapify.com/v2/places' +
+        '?categories=tourism.attraction,tourism.sights,entertainment.museum,heritage' +
+        `&filter=circle:${lon},${lat},15000` +
+        `&bias=proximity:${lon},${lat}` +
+        '&limit=20';
+
+    const features = await fetchGeoapify(url);
+
+    return features
+        .filter(place => place.properties.name)
+        .map(place => ({
+            name: place.properties.name,
+            address:
+                place.properties.formatted ||
+                'Address unavailable',
+            price: null,
+            feeSource: 'Not available'
+        }))
+        .slice(0, 12);
+}
+
+/* =========================================================
+   HOTELS
+   ========================================================= */
+
+async function fetchHotels(city) {
+
+    const coordinates = getCityCoordinates(city);
+
+    if (!coordinates) {
+        return [];
+    }
+
+    const [lat, lon] = coordinates;
+
+    const url =
+        'https://api.geoapify.com/v2/places' +
+        '?categories=accommodation.hotel' +
+        `&filter=circle:${lon},${lat},10000` +
+        `&bias=proximity:${lon},${lat}` +
+        '&limit=15';
+
+    const features = await fetchGeoapify(url);
+
+    return features
+        .filter(place => place.properties.name)
+        .map(place => ({
+            name: place.properties.name,
+            address:
+                place.properties.formatted ||
+                'Address unavailable',
+            rating:
+                place.properties.rating ||
+                'N/A'
+        }));
+}
+
+/* =========================================================
+   RESTAURANTS
+   ========================================================= */
+
+async function fetchRestaurants(city) {
 
 // Function to fetch restaurants
 const fetchRestaurants = async (city) => {
     const coordinates = getCityCoordinates(city);
     if (!coordinates) return [];
 
-    const [latitude, longitude] = coordinates;
-    const apiKey = '';
-    const url = `https://api.geoapify.com/v2/places?categories=catering.restaurant&conditions=named&filter=circle:${longitude},${latitude},5000&bias=proximity:${longitude},${latitude}&lang=en&limit=10&apiKey=${apiKey}`;
+    if (!coordinates) {
+        return [];
+    }
+
+    const [lat, lon] = coordinates;
+
+    const url =
+        'https://api.geoapify.com/v2/places' +
+        '?categories=catering.restaurant' +
+        `&filter=circle:${lon},${lat},10000` +
+        `&bias=proximity:${lon},${lat}` +
+        '&limit=15';
+
+    const features = await fetchGeoapify(url);
+
+    return features
+        .filter(place => place.properties.name)
+        .map(place => ({
+            name: place.properties.name,
+            address:
+                place.properties.formatted ||
+                'Address unavailable',
+            rating:
+                place.properties.rating ||
+                'N/A'
+        }));
+}
+
+/* =========================================================
+   API ENDPOINTS
+   ========================================================= */
+
+app.post('/get_tourist_attractions', async (req, res) => {
 
     try {
-        const response = await fetch(url);
-        if (response.ok) {
-            const data = await response.json();
-            return data.features.map((place) => {
-                const properties = place.properties;
-                return {
-                    name: properties.name || 'N/A',
-                    address: properties.formatted || 'N/A',
-                };
+
+        const { city } = req.body;
+
+        if (!city) {
+            return res.status(400).json({
+                error: 'City is required'
             });
         } else {
             console.error('API Error:', response.status, response.statusText);
             return [];
         }
-    } catch (error) {
-        console.error('Fetch error:', error);
-        return [];
+
+        const attractions = await fetchTourism(city);
+
+        res.json(attractions);
+
+    } catch (err) {
+
+        console.error('Tourism error:', err);
+
+        res.status(500).json({
+            error: 'Failed to fetch tourist attractions'
+        });
     }
-};
+});
 
 // API endpoint to get hotels
 app.post('/get_hotels', async (req, res) => {
-    const { city } = req.body;
-    const hotels = await fetchHotels(city);
-    res.json(hotels);
+
+    try {
+
+        const { city } = req.body;
+
+        if (!city) {
+            return res.status(400).json({
+                error: 'City is required'
+            });
+        }
+
+        const hotels = await fetchHotels(city);
+
+        res.json(hotels);
+
+    } catch (err) {
+
+        console.error('Hotel error:', err);
+
+        res.status(500).json({
+            error: 'Failed to fetch hotels'
+        });
+    }
 });
 
 // API endpoint to get restaurants
 app.post('/get_restaurants', async (req, res) => {
-    const { city } = req.body;
-    const restaurants = await fetchRestaurants(city);
-    res.json(restaurants);
+
+    try {
+
+        const { city } = req.body;
+
+        if (!city) {
+            return res.status(400).json({
+                error: 'City is required'
+            });
+        }
+
+        const restaurants = await fetchRestaurants(city);
+
+        res.json(restaurants);
+
+    } catch (err) {
+
+        console.error('Restaurant error:', err);
+
+        res.status(500).json({
+            error: 'Failed to fetch restaurants'
+        });
+    }
 });
 
 // Start the server
