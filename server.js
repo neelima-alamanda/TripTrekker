@@ -4,6 +4,7 @@ import fetch from 'node-fetch';
 import path from 'path';
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
+import bcrypt from 'bcrypt';
 
 dotenv.config();
 
@@ -20,9 +21,6 @@ const __dirname = path.dirname(__filename);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
-
-// Serve static HTML files from the public directory
-app.use(express.static(path.join(_dirname, 'public')));
 
 mongoose.connect(process.env.MONGODB_URI)
     .then(() => console.log('MongoDB connection successful'))
@@ -96,10 +94,12 @@ app.post('/register', async (req, res) => {
             });
         }
 
+        const hashedPassword = await bcrypt.hash(password, 10);
+
         const user = new Users({
             username,
             email,
-            password
+            password: hashedPassword
         });
 
         await user.save();
@@ -122,8 +122,21 @@ app.post('/login', async (req, res) => {
     try {
         const { username, password } = req.body;
 
+        if (!username || !password) {
+            return res.status(400).json({
+                error: 'Invalid username or password'
+            });
+        }
+
         const user = await Users.findOne({ username });
-        if (!user || user.password !== password) {
+        if (!user || !user.password) {
+            return res.status(400).json({
+                error: 'Invalid username or password'
+            });
+        }
+
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
             return res.status(400).json({
                 error: 'Invalid username or password'
             });
@@ -337,7 +350,6 @@ async function fetchGeoapify(url) {
     if (!GEOAPIFY_API_KEY) {
         throw new Error('GEOAPIFY_API_KEY is missing in .env');
     }
-};
 
     const separator = url.includes('?') ? '&' : '?';
 
@@ -380,10 +392,7 @@ async function fetchTourism(city) {
         return verifiedAttractions[city];
     }
 
-// Function to fetch hotels
-const fetchHotels = async (city) => {
     const coordinates = getCityCoordinates(city);
-    if (!coordinates) return [];
 
     if (!coordinates) {
         return [];
@@ -455,10 +464,7 @@ async function fetchHotels(city) {
 
 async function fetchRestaurants(city) {
 
-// Function to fetch restaurants
-const fetchRestaurants = async (city) => {
     const coordinates = getCityCoordinates(city);
-    if (!coordinates) return [];
 
     if (!coordinates) {
         return [];
@@ -502,9 +508,6 @@ app.post('/get_tourist_attractions', async (req, res) => {
             return res.status(400).json({
                 error: 'City is required'
             });
-        } else {
-            console.error('API Error:', response.status, response.statusText);
-            return [];
         }
 
         const attractions = await fetchTourism(city);
