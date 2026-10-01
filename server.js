@@ -9,7 +9,7 @@ import bcrypt from 'bcrypt';
 dotenv.config();
 
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
 const GEOAPIFY_API_KEY = process.env.GEOAPIFY_API_KEY;
 
