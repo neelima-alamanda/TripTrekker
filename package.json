@@ -1,14 +1,21 @@
 {
-  "name": "miniproject",
+  "name": "triptrekker",
   "version": "1.0.0",
-  "main": "logdb.js",
+  "description": "A full-stack travel planning web application with tourism recommendations, hotel and restaurant discovery, MongoDB authentication, Geoapify integration, and trip budget estimation.",
+  "main": "server.js",
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "travel-planning",
+    "nodejs",
+    "express",
+    "mongodb",
+    "geoapify"
+  ],
+  "author": "Neelima Alamanda",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^6.0.0",
@@ -20,6 +27,5 @@
     "node-fetch": "^3.3.2",
     "nodemon": "^3.1.9",
     "path": "^0.12.7"
-  },
-  "description": ""
+  }
 }
